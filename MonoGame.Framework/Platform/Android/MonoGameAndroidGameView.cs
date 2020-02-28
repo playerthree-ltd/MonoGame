@@ -21,6 +21,9 @@ namespace Microsoft.Xna.Framework
     [CLSCompliant(false)]
     public class MonoGameAndroidGameView : SurfaceView, ISurfaceHolderCallback, View.IOnTouchListener
     {
+
+        public static bool PreventDefaultBack { get; set; }
+
         // What is the state of the app, for tracking surface recreation inside this class.
         // This acts as a replacement for the all-out monitor wait approach which caused code to be quite fragile.
         enum InternalState
@@ -1124,7 +1127,7 @@ namespace Microsoft.Xna.Framework
             handled = Keyboard.KeyDown(keyCode);
 #if !OUYA
             // we need to handle the Back key here because it doesnt work any other way
-            if (keyCode == Keycode.Back)
+            if (!PreventDefaultBack && keyCode == Keycode.Back)
             {
                 GamePad.Back = true;
                 handled = true;
@@ -1149,7 +1152,7 @@ namespace Microsoft.Xna.Framework
 
         public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
         {
-            if (keyCode == Keycode.Back)
+            if (!PreventDefaultBack && keyCode == Keycode.Back)
                 GamePad.Back = false;
             if (GamePad.OnKeyUp(keyCode, e))
                 return true;
